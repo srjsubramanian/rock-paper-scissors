@@ -10,6 +10,10 @@
 
 import { clientsClaim } from "workbox-core";
 import { precacheAndRoute } from "workbox-precaching";
+import { Channels } from "./infra";
+import { PlayerService } from "./player";
+import { RoomService } from "./room";
+import { GameService } from "./game";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -23,9 +27,12 @@ precacheAndRoute(self.__WB_MANIFEST);
 
 // Any other custom service worker logic can go here.
 
-self.addEventListener("message", (event) => {
-  if (event.type === "MESSAGE_IDENTIFIER") {
-    console.log({ event });
-    console.log("ack by service worker");
-  }
-});
+const playerService = new PlayerService(
+  Channels.taskResultsPublisher,
+  Channels.tasksListener
+);
+const gameService = new GameService(
+  Channels.taskResultsPublisher,
+  Channels.tasksListener
+);
+const roomService = new RoomService(gameService);

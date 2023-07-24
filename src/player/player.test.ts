@@ -2,12 +2,13 @@ import { Player } from "./player";
 import { PlayerState } from "./player-types";
 
 const playerName = "Sooraj";
+const playerId = "testPlayerId";
 const playerRoom = "A3311";
 
 describe("player", () => {
-  let player = new Player();
+  let player = new Player(playerId);
   beforeEach(() => {
-    player = new Player();
+    player = new Player(playerId);
   });
   test("should initialize with waiting_for_name state", () => {
     player.initialize();

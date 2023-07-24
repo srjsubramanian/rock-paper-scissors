@@ -1,0 +1,23 @@
+export type EventHandler = (event: MessageEvent) => void;
+
+export interface IEventListener {
+  on(eventType: string, handler: EventHandler): string;
+  off(eventType: string, listenerId: string): void;
+}
+
+export type Message = {
+  type: string;
+  data: {
+    id: string;
+    [x: string]: any;
+  };
+};
+
+export interface IEventPublisher {
+  publish(message: Message): Promise<void>;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+declare var IEventPublisher: {
+  new (channelName: string): IEventPublisher;
+};

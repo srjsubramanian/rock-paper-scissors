@@ -1,9 +1,8 @@
 import { nanoid } from "nanoid";
 import { BroadcastChannel } from "broadcast-channel";
+import { EventHandler, IEventListener } from "./infra-types";
 
-type EventHandler = (event: MessageEvent) => void;
-
-class EventListener {
+class EventListener implements IEventListener {
   private readonly handlers = new Map<
     string,
     Array<{

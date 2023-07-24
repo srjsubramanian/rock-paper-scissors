@@ -4,10 +4,14 @@ import { IPlayer, PlayerEvent, PlayerState } from "./player-types";
 import { from, map } from "rxjs";
 
 class Player implements IPlayer {
+  constructor(private readonly _id: string) {}
   private readonly playerInstance = interpret(playerMachine);
   private readonly observablePlayer$ = from(this.playerInstance).pipe(
     map(({ value, context }) => ({ value, context }))
   );
+  public get id() {
+    return this._id;
+  }
   public get state() {
     return this.playerInstance.getSnapshot().value as PlayerState;
   }
@@ -34,10 +38,13 @@ class Player implements IPlayer {
   }
   initialize() {
     this.playerInstance.start();
+    console.log("player initialised");
     return this;
   }
   setName(name: string) {
     this.playerInstance.send({ type: PlayerEvent.NameInput, name });
+    console.log("player name set");
+    console.log({ name });
     return this;
   }
   setRoom(room: string) {

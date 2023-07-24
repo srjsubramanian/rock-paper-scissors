@@ -7,7 +7,11 @@ const player1 = "Sooraj";
 describe("room", () => {
   let room: IRoom;
   beforeEach(() => {
-    room = new Room(new GameService());
+    const games = new GameService(
+      { publish: async () => {} },
+      { on: () => "", off: () => {} }
+    );
+    room = new Room(games);
   });
   test("should be able to initialize", () => {
     room.initialize();

@@ -1,8 +1,9 @@
+import { Reactor } from "../infra";
 import { Game } from "./game";
 import { IGame, IGameService } from "./game-types";
 import { nanoid } from "nanoid";
 
-class GameService implements IGameService {
+class GameService extends Reactor implements IGameService {
   private readonly games = new Map<string, IGame>();
   create(): IGame {
     const id = nanoid();
@@ -10,6 +11,10 @@ class GameService implements IGameService {
     this.games.set(id, game);
     return game;
   }
+  supportedCommands(): string[] {
+    return [];
+  }
+  async run(task: string, data: any): Promise<any> {}
 }
 
 export { GameService };

@@ -1,12 +1,8 @@
 import { BroadcastChannel } from "broadcast-channel";
+import { Message, IEventPublisher } from "./infra-types";
 
-type Message = {
-  type: string;
-  data: any;
-};
-
-class EventPublisher {
-  private readonly channel: BroadcastChannel;
+class EventPublisher implements IEventPublisher {
+  private channel: BroadcastChannel;
   constructor(channelName: string) {
     this.channel = new BroadcastChannel(channelName);
   }

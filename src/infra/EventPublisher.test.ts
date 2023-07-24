@@ -8,7 +8,7 @@ describe("EventPublisher", () => {
     const publisher = new EventPublisher(channelName);
     const testMessage = {
       type: "test-message",
-      data: { key: "val" },
+      data: { key: "val", id: "test-id" },
     };
     const messages: MessageEvent[] = [];
     channel.onmessage = (message) => messages.push(message);

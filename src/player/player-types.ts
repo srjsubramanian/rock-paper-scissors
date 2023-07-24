@@ -37,6 +37,7 @@ export type PlayerContext = {
 };
 
 export interface IPlayer {
+  readonly id: string;
   readonly state: PlayerState;
   readonly state$: Observable<PlayerState>;
   readonly name: string;
@@ -47,4 +48,8 @@ export interface IPlayer {
   setName(name: string): IPlayer;
   setRoom(room: string): IPlayer;
   exitRoom(): IPlayer;
+}
+
+export interface IPlayerService {
+  create(): IPlayer;
 }
