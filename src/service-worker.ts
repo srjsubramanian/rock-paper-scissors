@@ -35,4 +35,8 @@ const gameService = new GameService(
   Channels.taskResultsPublisher,
   Channels.tasksListener
 );
-const roomService = new RoomService(gameService);
+const roomService = new RoomService(
+  Channels.taskResultsPublisher,
+  Channels.tasksListener,
+  gameService
+);
