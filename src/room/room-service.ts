@@ -32,7 +32,7 @@ class RoomService extends Reactor implements IRoomService {
   public get(name: string) {
     return this.rooms.get(name);
   }
-  supportedCommands(): string[] {
+  supportedTasks(): string[] {
     return [];
   }
   async run(task: string, data: any) {

@@ -12,7 +12,7 @@ class PlayerService extends Reactor implements IPlayerService {
     this.players.set(id, player);
     return player;
   }
-  supportedCommands(): string[] {
+  supportedTasks(): string[] {
     return [Constants.CREATE_PLAYER];
   }
   async run(task: string, data: any): Promise<any> {

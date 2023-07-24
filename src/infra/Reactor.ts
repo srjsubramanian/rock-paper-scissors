@@ -6,7 +6,7 @@ abstract class Reactor {
     protected readonly taskResultsPublisher: IEventPublisher,
     protected readonly tasksListener: IEventListener
   ) {
-    this.supportedCommands().forEach((command) => {
+    this.supportedTasks().forEach((command) => {
       this.tasksListener.on(command, async (message) => {
         const { id } = message.data;
         try {
@@ -29,7 +29,7 @@ abstract class Reactor {
       });
     });
   }
-  abstract supportedCommands(): string[];
+  abstract supportedTasks(): string[];
   abstract run(task: string, data: any): Promise<any>;
 }
 

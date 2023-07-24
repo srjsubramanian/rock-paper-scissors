@@ -11,7 +11,7 @@ class GameService extends Reactor implements IGameService {
     this.games.set(id, game);
     return game;
   }
-  supportedCommands(): string[] {
+  supportedTasks(): string[] {
     return [];
   }
   async run(task: string, data: any): Promise<any> {}
