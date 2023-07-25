@@ -3,7 +3,7 @@ import { IEventPublisher, IEventListener } from "./infra-types";
 
 abstract class Reactor {
   constructor(
-    protected readonly taskResultsPublisher: IEventPublisher,
+    protected readonly tasksPublisher: IEventPublisher,
     protected readonly tasksListener: IEventListener
   ) {
     this.supportedTasks().forEach((command) => {
@@ -11,16 +11,16 @@ abstract class Reactor {
         const { id } = message.data;
         try {
           const result = await this.run(command, message.data);
-          await this.taskResultsPublisher.publish({
-            type: Helpers.commandResultType(command),
+          await this.tasksPublisher.publish({
+            type: Helpers.taskResultType(command),
             data: {
               id,
               ...result,
             },
           });
         } catch (error) {
-          await this.taskResultsPublisher.publish({
-            type: Helpers.commandErrorType(command),
+          await this.tasksPublisher.publish({
+            type: Helpers.taskErrorType(command),
             data: {
               id,
             },

@@ -7,3 +7,9 @@ export {
 
 export { Game } from "./game";
 export { GameService } from "./game-service";
+export {
+  GAME_DEFAULT_STATE,
+  GAME_STATE_CHANGED,
+  GET_ALL_GAMES,
+  GET_GAME,
+} from "./game-constants";

@@ -12,8 +12,9 @@ import { clientsClaim } from "workbox-core";
 import { precacheAndRoute } from "workbox-precaching";
 import { Channels } from "./infra";
 import { PlayerService } from "./player";
-import { RoomService } from "./room";
-import { GameService } from "./game";
+import { ROOM_STATE_CHANGED, RoomService } from "./room";
+import { GAME_STATE_CHANGED, GameService } from "./game";
+import { Constants } from "./common";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -27,16 +28,23 @@ precacheAndRoute(self.__WB_MANIFEST);
 
 // Any other custom service worker logic can go here.
 
+Channels.stateEventsListener.on(GAME_STATE_CHANGED, console.log);
+Channels.stateEventsListener.on(Constants.PLAYER_STATE_CHANGED, console.log);
+Channels.stateEventsListener.on(ROOM_STATE_CHANGED, console.log);
+
 const playerService = new PlayerService(
-  Channels.taskResultsPublisher,
-  Channels.tasksListener
+  Channels.tasksPublisher,
+  Channels.tasksListener,
+  Channels.stateEventsPublisher
 );
 const gameService = new GameService(
-  Channels.taskResultsPublisher,
-  Channels.tasksListener
+  Channels.tasksPublisher,
+  Channels.tasksListener,
+  Channels.stateEventsPublisher
 );
 const roomService = new RoomService(
-  Channels.taskResultsPublisher,
+  Channels.tasksPublisher,
   Channels.tasksListener,
+  Channels.stateEventsPublisher,
   gameService
 );

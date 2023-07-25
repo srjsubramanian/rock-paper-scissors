@@ -1,52 +1,52 @@
 import { nanoid } from "nanoid";
-import { Helpers, Constants } from "../common";
-import { IEventListener, IEventPublisher } from "./infra-types";
-
-class ForegroundWorker {
+import { Constants, Helpers } from "../common";
+import {
+  IEventListener,
+  IEventPublisher,
+  IForegroundWorker,
+} from "./infra-types";
+class ForegroundWorker implements IForegroundWorker {
   constructor(
-    private readonly uiCommandsPublisher: IEventPublisher,
-    private readonly uiCommandResultsListener: IEventListener
-  ) {}
-  private async commandRunner<ResultType = any, PayloadType = any>(
-    commandType: string,
-    payload: PayloadType
+    private readonly tasksPublisher: IEventPublisher,
+    private readonly taskResultsListener: IEventListener,
+    private readonly stateEventsListener: IEventListener
   ) {
+    this.stateEventsListener.on(Constants.PLAYER_STATE_CHANGED, console.log);
+    this.stateEventsListener.on(Constants.ROOM_STATE_CHANGED, console.log);
+    this.stateEventsListener.on(Constants.GAME_STATE_CHANGED, console.log);
+  }
+  async run<ResultType = any, PayloadType = any>(
+    taskType: string,
+    payload: PayloadType
+  ): Promise<ResultType> {
     const id = nanoid();
-    const commandTask = new Promise(async (resolve, reject) => {
+    const execution = new Promise<ResultType>(async (resolve, reject) => {
       try {
-        this.uiCommandResultsListener.on(
-          Helpers.commandResultType(commandType),
+        this.taskResultsListener.on(
+          Helpers.taskResultType(taskType),
           (event) => {
             if (event.data?.id === id) {
-              resolve(event.data);
+              resolve(event.data as ResultType);
             }
           }
         );
-        this.uiCommandResultsListener.on(
-          Helpers.commandErrorType(commandType),
+        this.taskResultsListener.on(
+          Helpers.taskErrorType(taskType),
           (event) => {
             if (event.data?.id === id) {
               reject(event.data);
             }
           }
         );
-        await this.uiCommandsPublisher.publish({
-          type: commandType,
+        await this.tasksPublisher.publish({
+          type: taskType,
           data: { ...payload, id },
         });
       } catch (error) {
         reject(error);
       }
     });
-    const result = (await commandTask) as ResultType;
-    return result;
-  }
-  async createPlayerWithName(name: string) {
-    console.log({ name });
-    const result = await this.commandRunner<{ playerId: string }>(
-      Constants.CREATE_PLAYER,
-      { name }
-    );
+    const result = (await execution) as ResultType;
     return result;
   }
 }

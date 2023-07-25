@@ -3,10 +3,10 @@ import { createRoomMachine } from "./room-machine";
 import { RoomContext, RoomEvent, RoomState } from "./room-types";
 import { GameInput, GamePlayer, GameService, GameState } from "../game";
 
-const games = new GameService(
-  { publish: async () => {} },
-  { on: () => "", off: () => {} }
-);
+const mockPublisher = { publish: async () => {} };
+const mockListener = { on: () => "", off: () => {} };
+
+const games = new GameService(mockPublisher, mockListener, mockPublisher);
 /**
  * If this is mocked, acts more like unit test for room-machine.
  * But with the actual GameService, acts more like integration test

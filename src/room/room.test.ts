@@ -4,14 +4,14 @@ import { IRoom, RoomState } from "./room-types";
 
 const player1 = "Sooraj";
 
+const mockPublisher = { publish: async () => {} };
+const mockListener = { on: () => "", off: () => {} };
+
 describe("room", () => {
   let room: IRoom;
   beforeEach(() => {
-    const games = new GameService(
-      { publish: async () => {} },
-      { on: () => "", off: () => {} }
-    );
-    room = new Room(games);
+    const games = new GameService(mockPublisher, mockListener, mockPublisher);
+    room = new Room("test-room", games, mockPublisher);
   });
   test("should be able to initialize", () => {
     room.initialize();

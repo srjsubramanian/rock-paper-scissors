@@ -1,45 +1,55 @@
-import { useEffect } from "react";
-import { ForegroundWorker } from "../infra";
-import { Channels } from "../infra";
+import { PlayerViewState } from "./player-view-types";
+import { CheckingForPlayer } from "./CheckingForPlayer";
+import { Box } from "@mui/material";
+import { Flipper } from "react-flip-toolkit";
 
-const foregroundWorker = new ForegroundWorker(
-  Channels.uiCommandsPublisher,
-  Channels.uiCommandResultsListener
-);
+import { WaitingForPlayerName } from "./WaitingForPlayerName";
+import { PlayerViewDependencies, usePlayerView } from "./usePlayerView";
+import { Channels, ForegroundWorker } from "../infra";
+import { CreatingPlayer } from "./CreatingPlayer";
+import { Player } from "../player-ui";
 
-const CURRENT_PLAYER_KEY = "CURRENT_PLAYER";
-
-const createPlayer = async (name: string) => {
-  try {
-    const { playerId } = await foregroundWorker.createPlayerWithName("Sooraj");
-    const playerToStore = { playerId, name };
-    sessionStorage.setItem(CURRENT_PLAYER_KEY, JSON.stringify(playerToStore));
-  } catch (error) {
-    console.log({ error });
-  }
-};
-
-const getCurrentPlayer = () => {
-  const storedPlayer = sessionStorage.getItem(CURRENT_PLAYER_KEY);
-  if (storedPlayer) {
-    const player: { playerId: string; name: string } = JSON.parse(storedPlayer);
-    return player;
-  }
+const dependencies: PlayerViewDependencies = {
+  sessionStorage: sessionStorage,
+  foregroundWorker: new ForegroundWorker(
+    Channels.tasksPublisher,
+    Channels.tasksListener,
+    Channels.stateEventsListener
+  ),
 };
 
 const PlayerView = () => {
-  useEffect(() => {
-    console.log("check if player exists for this tab in session storage");
-    const currentPlayer = getCurrentPlayer();
-    if (currentPlayer?.playerId) {
-      console.log("player found; get player");
-      console.log(currentPlayer);
-    } else {
-      console.log("create new player");
-      createPlayer("Sooraj");
+  const { context, onNameInput } = usePlayerView(dependencies);
+  const renderSwitch = () => {
+    switch (context.state) {
+      case PlayerViewState.CheckingIfPlayer: {
+        return <CheckingForPlayer />;
+      }
+      case PlayerViewState.WaitingForPlayerName: {
+        return <WaitingForPlayerName onNameInput={onNameInput} />;
+      }
+      case PlayerViewState.CreatingPlayer: {
+        return <CreatingPlayer />;
+      }
+      case PlayerViewState.NamedPlayer: {
+        return <Player playerId={context.playerId} name={context.name} />;
+      }
+      case PlayerViewState.Error: {
+        return <>{context.error}</>;
+      }
     }
-  }, []);
-  return <div>Player's view</div>;
+  };
+  return (
+    <Box
+      sx={{ height: "inherit", width: "100%" }}
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Flipper flipKey={context.state}>{renderSwitch()}</Flipper>
+    </Box>
+  );
 };
 
 export { PlayerView };

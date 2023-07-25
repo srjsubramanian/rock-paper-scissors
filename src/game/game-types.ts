@@ -55,6 +55,7 @@ export type GameEventObject =
   | EndGameGracefullyEvent;
 
 export interface IGame {
+  readonly id: string;
   state$: Observable<GameState>;
   state: GameState;
   players: {

@@ -1,23 +1,24 @@
-import { Constants } from "../common";
 import { IGameService } from "../game";
 import { IEventListener, IEventPublisher, Reactor } from "../infra";
 import { Room } from "./room";
+import { CREATE_ROOM, GET_ALL_ROOMS, GET_ROOM } from "./room-constants";
 import { IRoom, IRoomService, RoomPreview, Rooms } from "./room-types";
 
 class RoomService extends Reactor implements IRoomService {
   private readonly rooms: Rooms = new Map();
   constructor(
-    protected readonly taskResultsPublisher: IEventPublisher,
+    protected readonly tasksPublisher: IEventPublisher,
     protected readonly tasksListener: IEventListener,
+    private readonly stateEventsChannel: IEventPublisher,
     private readonly games: IGameService
   ) {
-    super(taskResultsPublisher, tasksListener);
+    super(tasksPublisher, tasksListener);
   }
   create(name: string): IRoom {
     if (this.rooms.has(name)) {
       return this.rooms.get(name) as IRoom;
     }
-    const room = new Room(this.games);
+    const room = new Room(name, this.games, this.stateEventsChannel);
     this.rooms.set(name, room);
     return room;
   }
@@ -33,13 +34,23 @@ class RoomService extends Reactor implements IRoomService {
     return this.rooms.get(name);
   }
   supportedTasks(): string[] {
-    return [];
+    return [CREATE_ROOM, GET_ALL_ROOMS, GET_ROOM];
   }
   async run(task: string, data: any) {
     switch (task) {
-      case Constants.CREATE_ROOM: {
+      case CREATE_ROOM: {
         if (data?.name) {
           return this.create(data.name);
+        } else {
+          throw new Error("Room name required");
+        }
+      }
+      case GET_ALL_ROOMS: {
+        return { rooms: this.all };
+      }
+      case GET_ROOM: {
+        if (data?.name) {
+          return { room: this.get(data.name) };
         } else {
           throw new Error("Room name required");
         }

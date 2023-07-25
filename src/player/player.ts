@@ -1,10 +1,32 @@
 import { interpret } from "xstate";
 import { playerMachine } from "./player-machine";
-import { IPlayer, PlayerEvent, PlayerState } from "./player-types";
+import {
+  IPlayer,
+  PlayerContext,
+  PlayerEvent,
+  PlayerEventObject,
+  PlayerState,
+} from "./player-types";
 import { from, map } from "rxjs";
+import { IEventPublisher, StatefulEntity } from "../infra";
+import { Constants } from "../common";
 
-class Player implements IPlayer {
-  constructor(private readonly _id: string) {}
+class Player
+  extends StatefulEntity<PlayerContext, PlayerEventObject, PlayerState>
+  implements IPlayer
+{
+  constructor(
+    protected readonly _id: string,
+    protected readonly stateEventsChannel?: IEventPublisher
+  ) {
+    super(_id, stateEventsChannel);
+  }
+  protected getStateChangeEventType(): string {
+    return Constants.PLAYER_STATE_CHANGED;
+  }
+  protected getMachineToTrack() {
+    return this.playerInstance;
+  }
   private readonly playerInstance = interpret(playerMachine);
   private readonly observablePlayer$ = from(this.playerInstance).pipe(
     map(({ value, context }) => ({ value, context }))
@@ -37,14 +59,12 @@ class Player implements IPlayer {
     );
   }
   initialize() {
+    this.setupPublisher();
     this.playerInstance.start();
-    console.log("player initialised");
     return this;
   }
   setName(name: string) {
     this.playerInstance.send({ type: PlayerEvent.NameInput, name });
-    console.log("player name set");
-    console.log({ name });
     return this;
   }
   setRoom(room: string) {

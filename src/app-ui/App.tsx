@@ -20,7 +20,13 @@ const Games = () => {
 const App = () => {
   return (
     <Router>
-      <Box sx={{ width: "100%" }}>
+      <Box
+        sx={{
+          backgroundColor: (theme) => theme.palette.grey[200],
+          width: "100%",
+          height: "inherit",
+        }}
+      >
         <AppTabs />
         <Routes>
           <Route path="players" element={<Players />} />

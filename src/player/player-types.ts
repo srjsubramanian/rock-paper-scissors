@@ -42,8 +42,8 @@ export interface IPlayer {
   readonly state$: Observable<PlayerState>;
   readonly name: string;
   readonly name$: Observable<string>;
-  readonly room: string;
-  readonly room$: Observable<string>;
+  readonly room?: string;
+  readonly room$: Observable<string | undefined>;
   initialize(): IPlayer;
   setName(name: string): IPlayer;
   setRoom(room: string): IPlayer;
@@ -52,4 +52,6 @@ export interface IPlayer {
 
 export interface IPlayerService {
   create(): IPlayer;
+  readonly all: IPlayer[];
+  get(id: string): IPlayer | undefined;
 }

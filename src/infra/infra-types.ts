@@ -21,3 +21,10 @@ export interface IEventPublisher {
 declare var IEventPublisher: {
   new (channelName: string): IEventPublisher;
 };
+
+export interface IForegroundWorker {
+  run<ResultType = any, PayloadType = any>(
+    taskType: string,
+    payload: PayloadType
+  ): Promise<ResultType>;
+}

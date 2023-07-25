@@ -7,8 +7,9 @@ describe("game", () => {
   const player2Name = "Subramanian";
   const player1Input = Input.Paper;
   const player2Input = Input.Rock;
+  const gameId = "test-game";
   beforeEach(() => {
-    game = new Game();
+    game = new Game(gameId);
   });
   test("should be able to initialize with player names", () => {
     expect(game.players?.[Player.Player1]).toBeUndefined();

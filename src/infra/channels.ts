@@ -1,15 +1,10 @@
 import { EventListener } from "./EventListener";
 import { EventPublisher } from "./EventPublisher";
 
-const UI_COMMANDS_CHANNEL = "ui-commands";
-const UI_COMMAND_RESULTS_CHANNEL = "ui-command-results";
+const TASKS_CHANNEL = "tasks";
+export const tasksListener = new EventListener(TASKS_CHANNEL);
+export const tasksPublisher = new EventPublisher(TASKS_CHANNEL);
 
-export const uiCommandsPublisher = new EventPublisher(UI_COMMANDS_CHANNEL);
-export const tasksListener = new EventListener(UI_COMMANDS_CHANNEL);
-
-export const taskResultsPublisher = new EventPublisher(
-  UI_COMMAND_RESULTS_CHANNEL
-);
-export const uiCommandResultsListener = new EventListener(
-  UI_COMMAND_RESULTS_CHANNEL
-);
+const STATE_EVENTS_CHANNEL = "state-events";
+export const stateEventsListener = new EventListener(STATE_EVENTS_CHANNEL);
+export const stateEventsPublisher = new EventPublisher(STATE_EVENTS_CHANNEL);
